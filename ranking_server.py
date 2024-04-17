@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+
 app = Flask(__name__)
 CORS(app)
 
@@ -42,18 +43,24 @@ def analyze_sentiment():
         type = item.get("type")
         ranked_ids.append(id)
         if "text" in item:
-            words = item["text"].split()
-            wc += len(words)
+            try:
+                words = item["text"].split()
+                wc += len(words)
+            except AttributeError:
+                pass
         if "title" in item:
-            words = item["title"].split()
-            wc += len(words)
+            try:
+                words = item["title"].split()
+                wc += len(words)
+            except AttributeError:
+                pass
         if "comment" in item:
-            words = item["comment"].split()
-            wc += len(words)
-        if "Comment" in item:
-            words = item["Comment"].split()
-            wc += len(words)
-        if type == "Post" or type == "tweet" or type == "Tweet" or type == "post":
+            try:
+                words = item["comment"].split()
+                wc += len(words)
+            except AttributeError:
+                pass
+        if type == "tweet" or type == "post":
             pc += 1
             if wc >= 180 and pc >=2:
                 ranked_ids.append(NEW_POSTS)
@@ -67,6 +74,6 @@ def analyze_sentiment():
 
     return jsonify(result)
 
-
-if __name__ == "__main__":
-    app.run(port=5001, debug=True)
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
